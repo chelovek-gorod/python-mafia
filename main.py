@@ -5,7 +5,7 @@ from random import choice
 
 players = []
 game = False
-TOKEN = "5725792179:AAHIAlFVHfb5cBfCs6IIvwAwAlyJnQlhlfw"
+TOKEN = "7057302012:AAELgvrojjWbbglPEA1aylrHIUHSRKYYoEM"
 bot = TeleBot(TOKEN)
 night = False
 
