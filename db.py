@@ -2,6 +2,8 @@ import sqlite3
 import random
 
 
+
+
 def insert_player(player_id, username):
     con = sqlite3.connect("db.db")
     cur = con.cursor()
@@ -9,6 +11,8 @@ def insert_player(player_id, username):
     cur.execute(sql)
     con.commit()
     con.close()
+
+
 
 
 def players_amount():
@@ -19,6 +23,8 @@ def players_amount():
     res = cur.fetchall()
     con.close()
     return len(res)
+
+
 
 
 def get_mafia_usernames():
@@ -33,18 +39,19 @@ def get_mafia_usernames():
         names += name + '\n'
     con.close()
     return names
-
-
+     
+      
 def get_players_roles():
     con = sqlite3.connect("db.db")
-    cur = con.cursor()
+    cur = con.cursor() 
     sql = f"SELECT player_id, role FROM players"
     cur.execute(sql)
     data = cur.fetchall()
     con.close()
     return data
 
-# ======================================================================================
+
+
 
 def get_all_alive():
     con = sqlite3.connect("db.db")
@@ -56,13 +63,15 @@ def get_all_alive():
     con.close()
     return data
 
+
+         
 def set_roles(players):
     game_roles = ['citizen'] * players
-    mafias = int(players * 0.3) #
+    mafias = int(players * 0.3)
     for i in range(mafias):
         game_roles[i] = 'mafia'
     random.shuffle(game_roles)
-    con = sqlite3.connect("db.db")
+    con = sqlite3.conn    ect("db.db")
     cur = con.cursor()
     cur.execute(f"SELECT player_id FROM PLAYERS")
     player_ids_rows = cur.fetchall()
@@ -73,7 +82,9 @@ def set_roles(players):
     con.close()
 
 
-def vote(type, username, player_id):
+
+
+def vote(type, usernam e, player_id):
     # type = 'mafia_vote, citizen_vote'
     con = sqlite3.connect("db.db")
     cur = con.cursor()
@@ -87,9 +98,11 @@ def vote(type, username, player_id):
             f"UPDATE players SET voted = 1 WHERE player_id = '{player_id}' ")
         con.commit()
         con.close()
-        return True
+        return T rue
     con.close()
     return False
+
+
 
 
 def mafia_kill():
@@ -106,13 +119,17 @@ def mafia_kill():
     # Максимальное кол-во голосов мафии должно быть равно кол-ву мафии
     if max_votes == mafia_alive:
         # Получаем имя пользователя, за которого проголосовали
-        cur.execute(f"SELECT username FROM players WHERE mafia_vote = {max_votes}")
+        cur.execute(
+            f"SELECT username FROM players WHERE mafia_vote = {max_votes}")
         username_killed = cur.fetchone()[0]
         # Делаем update БД, ставим, что игрок мертв
-        cur.execute(f"UPDATE players SET dead = 1 WHERE username = '{username_killed}' ")
+        cur.execute(
+            f"UPDATE players SET dead = 1 WHERE username = '{username_killed}' ")
         con.commit()
     con.close()
     return username_killed
+
+
 
 
 def citizens_kill():
@@ -122,28 +139,22 @@ def citizens_kill():
     cur.execute(f"SELECT MAX(citizen_vote) FROM players")
     max_votes = cur.fetchone()[0]
     # Выбираем кол-во живых горожан
-    cur.execute(f"SELECT COUNT(*) FROM players WHERE citizen_vote = {max_votes}")
+    cur.execute(
+        f"SELECT COUNT(*) FROM players WHERE citizen_vote = {max_votes}")
     max_votes_count = cur.fetchone()[0]
     username_killed = 'никого'
     # Проверяем, что только 1 человек с макс. кол-вом голосов
     if max_votes_count == 1:
-        cur.execute(f"SELECT username FROM players WHERE citizen_vote = {max_votes}")
+        cur.execute(
+            f"SELECT username FROM players WHERE citizen_vote = {max_votes}")
         username_killed = cur.fetchone()[0]
-        cur.execute(f"UPDATE players SET dead = 1 WHERE username = '{username_killed}' ")
+        cur.execute(
+            f"UPDATE players SET dead = 1 WHERE username = '{username_killed}' ")
         con.commit()
     con.close()
     return username_killed
 
 
-def clear(dead=False):
-    con = sqlite3.connect("db.db")
-    cur = con.cursor()
-    sql = f"UPDATE players SET citizen_vote = 0, mafia_vote = 0, voted = 0"
-    if dead:
-        sql += ', dead = 0'
-    cur.execute(sql)
-    con.commit()
-    con.close()
 
 
 def check_winner():
@@ -156,6 +167,18 @@ def check_winner():
     citizens_alive = cur.fetchone()[0]
     if mafia_alive >= citizens_alive:
         return 'Мафия'
+
+
     if mafia_alive == 0:
         return 'Горожане'
 
+
+def clear(dead=False):
+   con = sqlite3.connect("db.db")
+   cur = con.cursor()
+   sql = f"UPDATE players SET citizen_vote=0, mafia_vote=0, voted=0"
+   if dead:
+       sql += ',dead=0'
+       cur.execute(sql)
+       con.commit()
+       con.close()
